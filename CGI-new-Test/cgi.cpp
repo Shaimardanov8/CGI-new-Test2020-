@@ -1,6 +1,5 @@
 #include "cgi.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,7 +54,57 @@ void get_form_data(char*& data)
 	}
 }
 
+void str_decode(char*& dec_str, const char* enc_str)
+{
+	char* res = new char[strlen(enc_str)+1];
+	int i = 0, j = 0;
+	while (enc_str[i])
+	{
+		if (enc_str[i]=='+')
+		{
+			res[j] = ' ';
+		} else
+		{
+			if (enc_str[i]=='%')
+			{
+				char ch[3] = {enc_str[i+1], enc_str[i+2], 0};
+				int c;
+				sscanf_s(ch, "%X", &c);
+				res[j] = c;
+				i += 2;
+			} else
+			{
+				res[j] = enc_str[i];
+			}
+		}
+		i++;
+		j++;
+	}
+	res[j] = 0;
+	size_t len = strlen(res)+1;
+	dec_str = new char[len];
+	strcpy_s(dec_str, len, res);
+	delete[] res;
+}
 
-
-
+void get_param_value(char*& value, const char* param_name, const char* data)
+{
+	char* str = _strdup(data);
+	char* tmp = str;
+	char* cont;
+	while (char* part = strtok_s(tmp, "&", &cont))
+	{
+		tmp = nullptr;
+		char* val;
+		char* key = strtok_s(part, "=", &val);
+		if (!_strcmpi(param_name, key))
+		{
+			str_decode(value, val);
+			delete[] str;
+			return;
+		}
+	}
+	delete[] str;
+	value = nullptr;
+}
 

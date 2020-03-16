@@ -12,5 +12,18 @@ void main()
 	cout << "</form>";
 	char* data = nullptr;
 	get_form_data(data);
-	cout << data;	
+	char* dec_data;
+	str_decode(dec_data, data);
+	cout << data << "<br>";
+	cout << dec_data << "<br>";
+	char* val;
+	get_param_value(val, "fn", data);
+	cout << "Имя: " << val << "<br>";
+	delete[] val;
+	get_param_value(val, "ln", data);
+	cout << "Фамилия: " << val << "<br>";
+	delete[] val;
+	
+	delete[] data;
+	delete[] dec_data;
 }
